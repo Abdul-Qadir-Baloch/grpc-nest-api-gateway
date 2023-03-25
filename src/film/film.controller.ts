@@ -1,9 +1,10 @@
-import { Controller, Inject, Post, OnModuleInit, UseGuards, Req } from '@nestjs/common';
+import { Controller, Inject, Post,Delete, OnModuleInit, UseGuards, Req, Body,Param,ParseIntPipe,Get,Patch,Query } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
-import { CreateFilmResponse, FilmServiceClient, FILM_SERVICE_NAME, CreateFilmRequest } from './film.pb';
+import { CreateFilmResponse, FilmServiceClient, FILM_SERVICE_NAME, CreateFilmRequest, DeleteFilmResponse } from './film.pb';
 import { AuthGuard } from '../auth/auth.guard';
-import { Request } from 'express';
+import { query, Request } from 'express';
+
 
 @Controller('film')
 export class FilmController implements OnModuleInit {
@@ -21,8 +22,23 @@ export class FilmController implements OnModuleInit {
   private async createFilm(@Req() req: Request): Promise<Observable<CreateFilmResponse>> {
     const body: CreateFilmRequest = req.body;
 
-    // body.userId = <number>req.user;
+    body.userId = <number>req.user;
 
     return this.svc.createFilm(body);
+  }
+  @Delete(':id')
+  @UseGuards(AuthGuard)
+  private async delete(@Param('id', ParseIntPipe)id:number):Promise<Observable<DeleteFilmResponse>>{
+        return this.svc.delete({id})
+  }
+  @Patch()
+  @UseGuards(AuthGuard)
+  private async updateFilm(@Body() body ):Promise<any>{
+      return this.svc.updateFilm(body)
+  } 
+  @Get()
+  @UseGuards(AuthGuard)
+  private async findFilms(@Query() query ):Promise<any>{
+        return this.svc.find(query)
   }
 }

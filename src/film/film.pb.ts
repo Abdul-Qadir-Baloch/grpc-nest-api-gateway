@@ -9,6 +9,8 @@ export const protobufPackage = 'film';
 export interface CreateFilmRequest {
   title: string;
   releaseYear: string;
+  directorId:number;
+  userId:number;
 }
 
 export interface CreateFilmResponse {
@@ -16,20 +18,49 @@ export interface CreateFilmResponse {
   error: string[];
   id: number;
 }
-
+export interface DeleteFilm{
+  id:number
+}
+export interface DeleteFilmResponse{
+  status:number;
+  error:string[]
+}
+export interface FindOneData {
+  id: number;
+  title: string;
+  release_year: string;
+  directorId: number;
+  created_at:string ;
+}
 export const FILM_PACKAGE_NAME = 'film';
 
 export interface FilmServiceClient {
   createFilm(request: CreateFilmRequest): Observable<CreateFilmResponse>;
+ 
+  delete(request:DeleteFilm): Observable<DeleteFilmResponse>
+ 
+  search(request:any) :Observable<FindOneData>
+ 
+  updateFilm(request:any) : Observable <any>
+ 
+  find(request:any): Observable <any>
 }
 
 export interface FilmServiceController {
   createFilm(request: CreateFilmRequest): Promise<CreateFilmResponse> | Observable<CreateFilmResponse> | CreateFilmResponse;
+ 
+  delete(request:DeleteFilm):Promise<any> |Observable<DeleteFilmResponse>
+ 
+  search(request:any) :Promise<any> |Observable<FindOneData>
+ 
+  updateFilm(request:any) : Promise<any> | Observable <any>
+
+  find(request:any) : Promise<any> | Observable<any>
 }
 
 export function FilmServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ['createFilm'];
+    const grpcMethods: string[] = ['createFilm','delete','search', 'updateFilm', 'find'];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod('FilmService', method)(constructor.prototype[method], method, descriptor);

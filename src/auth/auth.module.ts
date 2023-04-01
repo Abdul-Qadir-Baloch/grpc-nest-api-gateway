@@ -1,8 +1,10 @@
 import { Global, Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthController } from './auth.controller';
 import { AUTH_SERVICE_NAME, AUTH_PACKAGE_NAME } from './auth.pb';
 import { AuthService } from './auth.service';
+import { RolesGuard } from './roles.guard';
 
 @Global()
 @Module({
@@ -20,7 +22,7 @@ import { AuthService } from './auth.service';
     ]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService,{provide:APP_GUARD ,useClass:RolesGuard}],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -3,7 +3,9 @@ import { ClientGrpc } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 import { CreateFilmResponse, FilmServiceClient, FILM_SERVICE_NAME, CreateFilmRequest, DeleteFilmResponse } from './film.pb';
 import { AuthGuard } from '../auth/auth.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { query, Request } from 'express';
+import { Role } from 'src/auth/role.enum';
 
 
 @Controller('film')
@@ -18,15 +20,16 @@ export class FilmController implements OnModuleInit {
   }
 
   @Post()
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard)
   private async createFilm(@Req() req: Request): Promise<Observable<CreateFilmResponse>> {
     const body: CreateFilmRequest = req.body;
-
     body.userId = <number>req.user;
 
     return this.svc.createFilm(body);
   }
   @Delete(':id')
+  @Roles(Role.Admin)
   @UseGuards(AuthGuard)
   private async delete(@Param('id', ParseIntPipe)id:number):Promise<Observable<DeleteFilmResponse>>{
         return this.svc.delete({id})

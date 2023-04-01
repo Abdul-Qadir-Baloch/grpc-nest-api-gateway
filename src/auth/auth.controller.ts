@@ -16,6 +16,7 @@ export class AuthController implements OnModuleInit {
 
   @Post('register')
   private async register(@Body() body: RegisterRequest): Promise<Observable<RegisterResponse>> {
+    console.log(body)
     return this.svc.register(body);
   }
 
